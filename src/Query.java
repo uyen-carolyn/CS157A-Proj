@@ -185,7 +185,7 @@ public static void five(Statement stmt, String limit) {
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryTitle, startYear, AVG(age) "
+		rs = stmt.executeQuery("SELECT T.tconst, T.primaryTitle, AVG(age) "
 				+ "FROM Users U, Titles T, Favorites F "
 				+ "WHERE titleType='movie' AND U.uID=F.uID AND T.tconst=F.tconst "
 				+ "GROUP BY T.tconst "
@@ -193,8 +193,8 @@ public static void five(Statement stmt, String limit) {
 			
 		// Process the results
 		while(rs.next()){
-			sop("Title: " + rs.getString("primaryTitle") + 
-					", Year: " + rs.getInt("startYear") + 
+			sop("tconst: " + rs.getString("T.tconst") + 
+					", Title: " + rs.getInt("T.primaryTitle") + 
 					", Average Age: " + rs.getInt("AVG(age)"));
 		}
 	} 
