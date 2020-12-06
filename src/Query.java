@@ -7,7 +7,7 @@ public class Query {
 // JDBC driver name and database URL
 static final String DB_URL = "jdbc:mysql://localhost:3306/fletnix?serverTimezone=UTC";
 static final String USER = "root";
-static final String PASS = "coyote3";
+static final String PASS = "##########";
 	
 // Print Method
 public static void sop(String s) {
@@ -72,18 +72,25 @@ public static void choice(int query, Statement stmt, String limit) {
 	}
 }
 
-// Query 1 (INCOMPLETE)
+// Query 1
 public static void one(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT uName, primaryTitle, rating, ratingDate " + 
+				"FROM Ratings R, Users U, Favorites F " + 
+				"WHERE R.uID=U.uID AND T.tconst=R.tconst " + 
+				"ORDER BY U.uID, primaryTitle; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Username: " + rs.getString("uName") + 
+					", Primary Title: " + rs.getInt("primaryTitle") + 
+					", Rating: " + rs.getInt("rating") + 
+					", Rating Date: " + rs.getInt("ratingDate"));
 		}
 	} 
 	
@@ -93,18 +100,22 @@ public static void one(Statement stmt, String limit) {
 
 }
 
-//Query 2 (INCOMPLETE)
+//Query 2 
 public static void two(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT N.primaryName " + 
+				"FROM Name N NATURAL JOIN Principals P NATURAL JOIN Titles T " + 
+				"GROUP BY primaryName " + 
+				"HAVING Count(T.tconst) > 10; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Primary Name: " + rs.getString("primaryName"));
 		}
 	} 
 	
@@ -143,18 +154,23 @@ public static void three(Statement stmt, String limit) {
 }
 
 
-//Query 4 (INCOMPLETE)
+//Query 4 
 public static void four(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT genre, COUNT(uID) " + 
+				"FROM Titles T NATURAL JOIN Favorites F " + 
+				"GROUP BY tconst " + 
+				"ORDER BY COUNT(*); " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Genre: " + rs.getString("uName") + 
+					", Number of uID: " + rs.getInt("COUNT(uID)"));
 		}
 	} 
 	
@@ -191,18 +207,23 @@ public static void five(Statement stmt, String limit) {
 
 }
 
-//Query 6 (INCOMPLETE)
+//Query 6 
 public static void six(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT primaryTitle as title, MAX(rating) - MIN(rating) as rating_spread " + 
+				"FROM Ratings NATURAL JOIN Titles " + 
+				"GROUP BY primaryString " + 
+				"ORDER BY rating_spread DESC, title; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Title: " + rs.getString("primaryTitle") + 
+					", Rating Spread: " + rs.getInt("MAX(rating) - MIN(rating)"));
 		}
 	} 
 	
