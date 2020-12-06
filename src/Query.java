@@ -367,18 +367,25 @@ public static void eleven(Statement stmt, String limit) {
 
 }
 
-//Query 12 (INCOMPLETE)
+//Query 12
 public static void twelve(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT primaryTitle, seasonNum, episodeNum " + 
+				"FROM Titles T NATURAL JOIN Episodes E " + 
+				"ORDER BY T.primaryTitle, E.seasonNum, E.episodeNum; " + 
+				" " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Title: " + rs.getString("primaryTitle") + 
+			    		", Season: " + rs.getString("seasonNum") +
+					", Episode: " + rs.getString("episodeNum"));
+			}
 		}
 	} 
 	
@@ -388,18 +395,23 @@ public static void twelve(Statement stmt, String limit) {
 
 }
 
-//Query 13 (INCOMPLETE)
+//Query 13
 public static void thirteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT F.uID, F.tconst " + 
+				"FROM Favorites F LEFT OUTER JOIN Ratings ON (uID) " + 
+				"WHERE rating IS NULL; " + 
+				" " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("uID: " + rs.getString("F.uID") + 
+					", tconst: " + rs.getString("F.tconst"));
 		}
 	} 
 	
@@ -415,12 +427,19 @@ public static void fourteen(Statement stmt, String limit) {
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT primaryTitle, titleType, genre, startYear " + 
+				"FROM Users U, Titles  " + 
+				"WHERE tconst IN (SELECT tconst FROM Favorites WHERE uID=U.uID); " + 
+				" " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Title: " + rs.getString("primaryTitle") + 
+					", Format: " + rs.getString("titleType") +
+					", Genre: " + rs.getString("genre") +
+					", Released: " + rs.getString("startYear"));
 		}
 	} 
 	
@@ -430,18 +449,24 @@ public static void fourteen(Statement stmt, String limit) {
 
 }
 
-//Query 15 (INCOMPLETE)
+//Query 15
 public static void fifteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT N.primaryName, COUNT(tconst) as numTitles" + 
+				"FROM Names NATURAL JOIN Principals  " + 
+				"WHERE deathYear NOT NULL " + 
+				"GROUP BY N.nconst; " + 
+				" " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
+			sop("Name: " + rs.getString("primaryName") + 
+					", Number of Works: " + rs.getString("numTitles"));
 		}
 	} 
 	
@@ -450,7 +475,6 @@ public static void fifteen(Statement stmt, String limit) {
 	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
 
 }
-
 
 	
 } // End of class
