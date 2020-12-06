@@ -423,7 +423,7 @@ public static void fourteen(Statement stmt, String limit) {
 	try {
 		rs = stmt.executeQuery("SELECT primaryTitle, titleType, genre, startYear "
 				+ "SELECT primaryTitle, titleType, genre, startYear "
-				+ "FROM Users U JOIN Titles ON (isAdult) "
+				+ "FROM Users U JOIN Titles "
 				+ "WHERE tconst IN (SELECT tconst FROM Favorites WHERE uID=U.uID);");
 	
 		
