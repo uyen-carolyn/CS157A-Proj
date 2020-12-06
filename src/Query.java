@@ -158,9 +158,9 @@ public static void four(Statement stmt, String limit) {
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT genre, COUNT(uID) " + 
+		rs = stmt.executeQuery("SELECT T.genre, COUNT(uID) " + 
 				"FROM Titles T NATURAL JOIN Favorites F " + 
-				"GROUP BY tconst " + 
+				"GROUP BY T.tconst " + 
 				"ORDER BY COUNT(*); " + 
 				""
 				+ limit + ";");
