@@ -5,7 +5,7 @@ public class Query {
 // JDBC driver name and database URL
 static final String DB_URL = "jdbc:mysql://localhost:3306/fletnix?serverTimezone=UTC";
 static final String USER = "root";
-static final String PASS = "########"; // insert your own root password here
+static final String PASS = "##########";
 	
 // Print Method
 public static void sop(String s) {
@@ -325,7 +325,7 @@ public static void ten(Statement stmt, String limit) {
 		
 		// Process the results
 		while(rs.next()){
-			sop("Primary Title: " + rs.getString("primaryName") + 
+			sop("Primary Title: " + rs.getString("primaryTitle") + 
 					", Year: " + rs.getString("year") +
 					", Min Age: " + rs.getString("MIN(age)") +
 					", Max Age: " + rs.getString("MAX(age)") 
@@ -347,16 +347,17 @@ public static void eleven(Statement stmt, String limit) {
 	try {
 		rs = stmt.executeQuery("SELECT DISTINCT N.nconst, N.primaryName " + 
 				"FROM Ratings R NATURAL JOIN Titles T NATURAL JOIN Principles P NATURAL JOIN Names N " + 
-				"WHERE T.titleType = “movie” AND (N.primaryProfession = “actor” OR N.primaryProfession = “actress”) " + 
+				"WHERE T.titleType = 'movie' AND (N.primaryProfession = 'actor' OR N.primaryProfession = 'actress') " + 
 				"GROUP BY N.nconst " + 
 				"HAVING max(R.int) >= 4; " + 
+				" " + 
 				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("nconst: " + rs.getString("N.nconst") + 
-				", Name: " + rs.getInt("N.primaryName"));
+			sop("User ID: " + rs.getString("nconst") + 
+					", Primary Name: " + rs.getString("primaryName"));
 			}
 	} 
 	
@@ -366,22 +367,18 @@ public static void eleven(Statement stmt, String limit) {
 
 }
 
-//Query 12
+//Query 12 (INCOMPLETE)
 public static void twelve(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryTitle, seasonNum, episodeNum,  "
-				+ "FROM Titles T NATURAL JOIN Episodes E "
-				+ "WHERE titleType='tvEpisode' "
-				+ "ORDER BY primaryTitle, seasonNum, episodeNum;");
-	
+		rs = stmt.executeQuery(""
+				+ limit + ";");
 		
+		// Process the results
 		while(rs.next()){
-			sop("Title: " + rs.getString("primaryTitle") + 
-				", Season: " + rs.getString("seasonNum") + 
-				", Episode: " + rs.getInt("episodeNum"));
+			sop("");
 		}
 	} 
 	
@@ -391,20 +388,18 @@ public static void twelve(Statement stmt, String limit) {
 
 }
 
-//Query 13
+//Query 13 (INCOMPLETE)
 public static void thirteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT F.uID, F.tconst "
-				+ "FROM Favorites F LEFT OUTER JOIN Ratings ON (uID) "
-				+ "WHERE rating IS NULL;");
-	
+		rs = stmt.executeQuery(""
+				+ limit + ";");
 		
+		// Process the results
 		while(rs.next()){
-			sop("uID: " + rs.getString("F.uID") + 
-				", tconst: " + rs.getInt("F.tconst"));
+			sop("");
 		}
 	} 
 	
@@ -414,23 +409,18 @@ public static void thirteen(Statement stmt, String limit) {
 
 }
 
-//Query 14
+//Query 14 (INCOMPLETE)
 public static void fourteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryTitle, titleType, genre, startYear "
-				+ "SELECT primaryTitle, titleType, genre, startYear "
-				+ "FROM Users U JOIN Titles ON (isAdult) "
-				+ "WHERE tconst IN (SELECT tconst FROM Favorites WHERE uID=U.uID);");
-	
+		rs = stmt.executeQuery(""
+				+ limit + ";");
 		
+		// Process the results
 		while(rs.next()){
-			sop("Title: " + rs.getString("primaryTitle") + 
-				", Format: " + rs.getString("titleType") + 
-				", Genre: " + rs.getString("genre") + 
-				", First Aired: " + rs.getInt("startYear"));
+			sop("");
 		}
 	} 
 	
@@ -440,21 +430,18 @@ public static void fourteen(Statement stmt, String limit) {
 
 }
 
-//Query 15
+//Query 15 (INCOMPLETE)
 public static void fifteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryName, COUNT(tconst) as numTitles "
-				+ "FROM Names NATURAL JOIN Principals "
-				+ "WHERE deathYear NOT NULL  "
-				+ "GROUP BY Names.nconst;");
-	
+		rs = stmt.executeQuery(""
+				+ limit + ";");
 		
+		// Process the results
 		while(rs.next()){
-			sop("Name: " + rs.getString("primaryName") + 
-				", Number of Titles Worked On: " + rs.getInt("numTitles"));
+			sop("");
 		}
 	} 
 	
