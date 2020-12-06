@@ -1,5 +1,3 @@
-package project;
-
 import java.sql.*;
 
 public class Query {
@@ -7,7 +5,7 @@ public class Query {
 // JDBC driver name and database URL
 static final String DB_URL = "jdbc:mysql://localhost:3306/fletnix?serverTimezone=UTC";
 static final String USER = "root";
-static final String PASS = "##########";
+static final String PASS = "nguyen";
 	
 // Print Method
 public static void sop(String s) {
@@ -53,21 +51,21 @@ public static void query(int query, String desc, String limit) {
 public static void choice(int query, Statement stmt, String limit) {
 	
 	switch(query) {
-		case 1:  one(stmt, limit);
-		case 2:  two(stmt, limit);
-		case 3:	 three(stmt, limit);
-		case 4:  four(stmt, limit);
-		case 5:  five(stmt, limit);
-		case 6:  six(stmt, limit);
-		case 7:  seven(stmt, limit);
-		case 8:	 eight(stmt, limit);
-		case 9:  nine(stmt, limit);
-		case 10: ten(stmt, limit);
-		case 11: eleven(stmt, limit);
-		case 12: twelve(stmt, limit);
-		case 13: thirteen(stmt, limit);
-		case 14: fourteen(stmt, limit);
-		case 15: fifteen(stmt, limit);
+		case 1:  one(stmt, limit); break;
+		case 2:  two(stmt, limit); break;
+		case 3:	 three(stmt, limit); break;
+		case 4:  four(stmt, limit); break;
+		case 5:  five(stmt, limit); break;
+		case 6:  six(stmt, limit); break;
+		case 7:  seven(stmt, limit); break;
+		case 8:	 eight(stmt, limit); break;
+		case 9:  nine(stmt, limit); break;
+		case 10: ten(stmt, limit); break;
+		case 11: eleven(stmt, limit); break;
+		case 12: twelve(stmt, limit); break;
+		case 13: thirteen(stmt, limit); break;
+		case 14: fourteen(stmt, limit); break;
+		case 15: fifteen(stmt, limit); break;
 	
 	}
 }
@@ -170,7 +168,7 @@ public static void four(Statement stmt, String limit) {
 		// Process the results
 		while(rs.next()){
 			sop("Genre: " + rs.getString("uName") + 
-					", Number of uID: " + rs.getInt("COUNT(uID)"));
+					", Number of uIDs: " + rs.getInt("COUNT(uID)"));
 		}
 	} 
 	
@@ -250,7 +248,7 @@ public static void seven(Statement stmt, String limit) {
 		while(rs.next()){
 			sop("User ID: " + rs.getString("Ratings.uID") + 
 				", Name: " + rs.getString("uName") + 
-				", Number of Ratings Made: " + rs.getInt("numRatings"));
+				", Number of Ratings: " + rs.getInt("numRatings"));
 		}
 	} 
 	
@@ -261,19 +259,23 @@ public static void seven(Statement stmt, String limit) {
 }
 
 
-//Query 8 (INCOMPLETE)
+//Query 8 
 public static void eight(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT titleType, COUNT(tconst) " + 
+				"FROM Titles NATURAL JOIN Favorites " + 
+				"GROUP BY titleType; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
-		}
+			sop("Format: " + rs.getString("titleType") + 
+					", Number of Title IDs: " + rs.getString("COUNT(tconst)"));
+			}
 	} 
 	
 	// Catch Blocks
@@ -282,19 +284,25 @@ public static void eight(Statement stmt, String limit) {
 
 }
 
-//Query 9 (INCOMPLETE)
+//Query 9 
 public static void nine(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT primaryName, primaryProfession, COUNT(tconst) " + 
+				"FROM Names NATURAL JOIN Principals " + 
+				"GROUP BY Names.nconst " + 
+				"ORDER BY primaryName; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
-		}
+			sop("Primary Name: " + rs.getString("primaryName") + 
+					", Primary Profession: " + rs.getString("primaryProfession") +
+					", Number of Title IDs: " + rs.getString("COUNT(tconst)"));
+			}
 	} 
 	
 	// Catch Blocks
@@ -303,19 +311,26 @@ public static void nine(Statement stmt, String limit) {
 
 }
 
-//Query 10 (INCOMPLETE)
+//Query 10 
 public static void ten(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT primaryTitle, year, MIN(age), MAX(age) " + 
+				"FROM Users U, Titles T, Favorites F " + 
+				"WHERE titleType='movie' AND U.uID=F.uID AND T.tconst=F.tconst; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
-		}
+			sop("Primary Title: " + rs.getString("primaryName") + 
+					", Year: " + rs.getString("year") +
+					", Min Age: " + rs.getString("MIN(age)") +
+					", Max Age: " + rs.getString("MAX(age)") 
+					);
+			}
 	} 
 	
 	// Catch Blocks
@@ -324,19 +339,24 @@ public static void ten(Statement stmt, String limit) {
 
 }
 
-//Query 11 (INCOMPLETE)
+//Query 11 
 public static void eleven(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery(""
+		rs = stmt.executeQuery("SELECT DISTINCT N.primayName " + 
+				"FROM Ratings R NATURAL JOIN Titles T NATURAL JOIN Principles P NATURAL JOIN Names N " + 
+				"WHERE N.primaryProfession = 'actor' AND T.titleType = 'movie' " + 
+				"GROUP BY N.nconst " + 
+				"HAVING max(R.int) >= 4; " + 
+				""
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("");
-		}
+			sop("Primary Name: " + rs.getString("primaryName"));
+			}
 	} 
 	
 	// Catch Blocks
