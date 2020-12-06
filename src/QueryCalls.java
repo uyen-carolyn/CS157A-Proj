@@ -3,21 +3,21 @@ package project;
 public class QueryCalls {
 	
 // Descriptions of Queries
-static String desc1 = "";
-static String desc2 = "";
+static String desc1 = "Finding all users and their ratings of their favorite movies:";
+static String desc2 = "Finding all popular actors:";
 static String desc3 = "Finding all ratings of titles from best to worst:";
-static String desc4 = "";
+static String desc4 = "Finding most popular genres:";
 static String desc5 = "Finding the average age for favorite movies among users:";
-static String desc6 = "";
+static String desc6 = "Finding all controversial movies:";
 static String desc7 = "Finding all users who have reviewed three or more titles:";
-static String desc8 = "";
-static String desc9 = "";
-static String desc10 = "";
-static String desc11 = "";
-static String desc12 = "";
-static String desc13 = "";
-static String desc14 = "";
-static String desc15 = "";
+static String desc8 = "Finding total number of favorite movies vs tv shows:";
+static String desc9 = "Finding all actors and total number of roles they acted:";
+static String desc10 = "Finding age groups of favorited movies:";
+static String desc11 = "Finding all actors in high-rated movies";
+static String desc12 = "Finding all episodes ordered by TV show titles and episode number:";
+static String desc13 = "Finding all users with favorited but not rated movies:";
+static String desc14 = "Finding all ongoing titles favorited by the user:";
+static String desc15 = "Finding all deceased actors and total number of titles they've done:";
 
 //Print Method
 public static void sop(String s) {
