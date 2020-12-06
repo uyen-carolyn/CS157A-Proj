@@ -5,7 +5,7 @@ public class Query {
 // JDBC driver name and database URL
 static final String DB_URL = "jdbc:mysql://localhost:3306/fletnix?serverTimezone=UTC";
 static final String USER = "root";
-static final String PASS = "########";
+static final String PASS = "########"; // insert your own root password here
 	
 // Print Method
 public static void sop(String s) {
