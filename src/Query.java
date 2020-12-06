@@ -1,3 +1,5 @@
+package project;
+
 import java.sql.*;
 
 public class Query {
@@ -5,7 +7,7 @@ public class Query {
 // JDBC driver name and database URL
 static final String DB_URL = "jdbc:mysql://localhost:3306/fletnix?serverTimezone=UTC";
 static final String USER = "root";
-static final String PASS = "##########";
+static final String PASS = "coyote3";
 	
 // Print Method
 public static void sop(String s) {
@@ -24,7 +26,7 @@ public static void query(int query, String desc, String limit) {
 		// Open a connection, create a statement
 		conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		stmt = conn.createStatement();
-			
+		
 		// Execute Query
 		sop(desc);
 		choice(query, stmt, limit);
@@ -66,9 +68,18 @@ public static void choice(int query, Statement stmt, String limit) {
 		case 13: thirteen(stmt, limit); break;
 		case 14: fourteen(stmt, limit); break;
 		case 15: fifteen(stmt, limit); break;
-	
+		case 16: printUsers(stmt, limit); break;
+		case 17: printTitles(stmt, limit); break;
+		case 18: printRatings(stmt, limit); break;
+		case 19: printEpisodes(stmt, limit); break;
+		case 20: printNames(stmt, limit); break;
+		case 21: printPrincipals(stmt, limit); break;
+		case 22: printFavorites(stmt, limit); break;
+		case 23: printArchive(stmt, limit); break;
 	}
 }
+
+//-------------------------------------------
 
 // Query 1
 public static void one(Statement stmt, String limit) {
@@ -77,18 +88,18 @@ public static void one(Statement stmt, String limit) {
 	
 	try {
 		rs = stmt.executeQuery("SELECT uName, primaryTitle, rating, ratingDate " + 
-				"FROM Ratings R, Users U, Favorites F " + 
-				"WHERE R.uID=U.uID AND T.tconst=R.tconst " + 
-				"ORDER BY U.uID, primaryTitle; " + 
-				""
-				+ limit + ";");
+				"FROM Ratings R, Users U, Titles T, Favorites F " + 
+				"WHERE R.uID=F.uID AND R.uID=U.uID AND T.tconst=R.tconst AND T.tconst=F.tconst " + 
+				"ORDER BY U.uID, primaryTitle " + 
+				limit + ";");
+
 		
 		// Process the results
 		while(rs.next()){
 			sop("Username: " + rs.getString("uName") + 
-					", Primary Title: " + rs.getInt("primaryTitle") + 
+					", Primary Title: " + rs.getString("primaryTitle") + 
 					", Rating: " + rs.getInt("rating") + 
-					", Rating Date: " + rs.getInt("ratingDate"));
+					", Rating Date: " + rs.getDate("ratingDate"));
 		}
 	} 
 	
@@ -98,17 +109,16 @@ public static void one(Statement stmt, String limit) {
 
 }
 
-//Query 2 
+// Query 2 
 public static void two(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
 		rs = stmt.executeQuery("SELECT N.primaryName " + 
-				"FROM Name N NATURAL JOIN Principals P NATURAL JOIN Titles T " + 
+				"FROM Names N NATURAL JOIN Principals P NATURAL JOIN Titles T " +
 				"GROUP BY primaryName " + 
-				"HAVING Count(T.tconst) > 10; " + 
-				""
+				"HAVING Count(T.tconst) > 10 "
 				+ limit + ";");
 		
 		// Process the results
@@ -122,7 +132,6 @@ public static void two(Statement stmt, String limit) {
 	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
 
 }
-
 
 // Query 3
 public static void three(Statement stmt, String limit) {
@@ -151,8 +160,7 @@ public static void three(Statement stmt, String limit) {
 
 }
 
-
-//Query 4 
+// Query 4 
 public static void four(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
@@ -160,15 +168,14 @@ public static void four(Statement stmt, String limit) {
 	try {
 		rs = stmt.executeQuery("SELECT T.genre, COUNT(uID) " + 
 				"FROM Titles T NATURAL JOIN Favorites F " + 
-				"GROUP BY T.tconst " + 
-				"ORDER BY COUNT(*); " + 
-				""
+				"GROUP BY T.genre " + 
+				"ORDER BY COUNT(*) DESC "
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("Genre: " + rs.getString("uName") + 
-					", Number of uIDs: " + rs.getInt("COUNT(uID)"));
+			sop("Genre: " + rs.getString("genre") + 
+					", Number of Favorites: " + rs.getInt("COUNT(uID)"));
 		}
 	} 
 	
@@ -178,14 +185,13 @@ public static void four(Statement stmt, String limit) {
 
 }
 
-
 // Query 5
 public static void five(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT T.tconst, T.primaryTitle, AVG(age) "
+		rs = stmt.executeQuery("SELECT primaryTitle, startYear, AVG(age) "
 				+ "FROM Users U, Titles T, Favorites F "
 				+ "WHERE titleType='movie' AND U.uID=F.uID AND T.tconst=F.tconst "
 				+ "GROUP BY T.tconst "
@@ -193,8 +199,8 @@ public static void five(Statement stmt, String limit) {
 			
 		// Process the results
 		while(rs.next()){
-			sop("tconst: " + rs.getString("T.tconst") + 
-					", Title: " + rs.getInt("T.primaryTitle") + 
+			sop("Title: " + rs.getString("primaryTitle") + 
+					", Year: " + rs.getInt("startYear") + 
 					", Average Age: " + rs.getInt("AVG(age)"));
 		}
 	} 
@@ -205,7 +211,7 @@ public static void five(Statement stmt, String limit) {
 
 }
 
-//Query 6 
+// Query 6
 public static void six(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
@@ -213,15 +219,14 @@ public static void six(Statement stmt, String limit) {
 	try {
 		rs = stmt.executeQuery("SELECT primaryTitle as title, MAX(rating) - MIN(rating) as rating_spread " + 
 				"FROM Ratings NATURAL JOIN Titles " + 
-				"GROUP BY primaryString " + 
-				"ORDER BY rating_spread DESC, title; " + 
-				""
+				"GROUP BY primaryTitle " + 
+				"ORDER BY rating_spread DESC, title "
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("Title: " + rs.getString("primaryTitle") + 
-					", Rating Spread: " + rs.getInt("MAX(rating) - MIN(rating)"));
+			sop("Title: " + rs.getString("title") + 
+					", Rating Spread: " + rs.getInt("rating_spread"));
 		}
 	} 
 	
@@ -230,7 +235,6 @@ public static void six(Statement stmt, String limit) {
 	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
 
 }
-
 
 // Query 7
 public static void seven(Statement stmt, String limit) {
@@ -248,7 +252,7 @@ public static void seven(Statement stmt, String limit) {
 		while(rs.next()){
 			sop("User ID: " + rs.getString("Ratings.uID") + 
 				", Name: " + rs.getString("uName") + 
-				", Number of Ratings: " + rs.getInt("numRatings"));
+				", Number of Ratings Made: " + rs.getInt("numRatings"));
 		}
 	} 
 	
@@ -258,8 +262,7 @@ public static void seven(Statement stmt, String limit) {
 
 }
 
-
-//Query 8 
+// Query 8
 public static void eight(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
@@ -267,14 +270,13 @@ public static void eight(Statement stmt, String limit) {
 	try {
 		rs = stmt.executeQuery("SELECT titleType, COUNT(tconst) " + 
 				"FROM Titles NATURAL JOIN Favorites " + 
-				"GROUP BY titleType; " + 
-				""
+				"GROUP BY titleType "
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
 			sop("Format: " + rs.getString("titleType") + 
-					", Number of Title IDs: " + rs.getString("COUNT(tconst)"));
+					", Number of Titles: " + rs.getString("COUNT(tconst)"));
 			}
 	} 
 	
@@ -284,7 +286,7 @@ public static void eight(Statement stmt, String limit) {
 
 }
 
-//Query 9 
+// Query 9
 public static void nine(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
@@ -293,8 +295,7 @@ public static void nine(Statement stmt, String limit) {
 		rs = stmt.executeQuery("SELECT primaryName, primaryProfession, COUNT(tconst) " + 
 				"FROM Names NATURAL JOIN Principals " + 
 				"GROUP BY Names.nconst " + 
-				"ORDER BY primaryName; " + 
-				""
+				"ORDER BY primaryName " 
 				+ limit + ";");
 		
 		// Process the results
@@ -311,22 +312,20 @@ public static void nine(Statement stmt, String limit) {
 
 }
 
-//Query 10 
+// Query 10
 public static void ten(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryTitle, year, MIN(age), MAX(age) " + 
+		rs = stmt.executeQuery("SELECT primaryTitle, startYear, MIN(age), MAX(age) " + 
 				"FROM Users U, Titles T, Favorites F " + 
-				"WHERE titleType='movie' AND U.uID=F.uID AND T.tconst=F.tconst; " + 
-				""
+				"WHERE titleType='movie' AND U.uID=F.uID AND T.tconst=F.tconst "
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
 			sop("Primary Title: " + rs.getString("primaryTitle") + 
-					", Year: " + rs.getString("year") +
 					", Min Age: " + rs.getString("MIN(age)") +
 					", Max Age: " + rs.getString("MAX(age)") 
 					);
@@ -339,24 +338,22 @@ public static void ten(Statement stmt, String limit) {
 
 }
 
-//Query 11 
+// Query 11
 public static void eleven(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
 		rs = stmt.executeQuery("SELECT DISTINCT N.nconst, N.primaryName " + 
-				"FROM Ratings R NATURAL JOIN Titles T NATURAL JOIN Principles P NATURAL JOIN Names N " + 
+				"FROM Ratings R NATURAL JOIN Titles T NATURAL JOIN Principals P NATURAL JOIN Names N " + 
 				"WHERE T.titleType = 'movie' AND (N.primaryProfession = 'actor' OR N.primaryProfession = 'actress') " + 
 				"GROUP BY N.nconst " + 
-				"HAVING max(R.int) >= 4; " + 
-				" " + 
-				""
+				"HAVING AVG(R.rating) >= 4 "
 				+ limit + ";");
 		
 		// Process the results
 		while(rs.next()){
-			sop("User ID: " + rs.getString("nconst") + 
+			sop("ID: " + rs.getString("nconst") + 
 					", Primary Name: " + rs.getString("primaryName"));
 			}
 	} 
@@ -367,22 +364,23 @@ public static void eleven(Statement stmt, String limit) {
 
 }
 
-//Query 12
+// Query 12
 public static void twelve(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryTitle, seasonNum, episodeNum,  "
-				+ "FROM Titles T NATURAL JOIN Episodes E "
-				+ "WHERE titleType='tvEpisode' "
-				+ "ORDER BY primaryTitle, seasonNum, episodeNum;");
-	
+		rs = stmt.executeQuery("SELECT primaryTitle, seasonNum, episodeNum " +
+				"FROM Titles NATURAL JOIN Episodes " +
+				"WHERE titleType='tvepisode' " +
+				"ORDER BY primaryTitle, seasonNum, episodeNum " +
+				limit + ";");
 		
+		// Process the results
 		while(rs.next()){
-			sop("Title: " + rs.getString("primaryTitle") + 
-				", Season: " + rs.getString("seasonNum") + 
-				", Episode: " + rs.getInt("episodeNum"));
+			sop("primaryTitle: "+ rs.getString("primaryTitle") +
+					", seasonNum: " + rs.getInt("seasonNum") +
+					", episodeNum: " + rs.getInt("episodeNum"));
 		}
 	} 
 	
@@ -392,20 +390,21 @@ public static void twelve(Statement stmt, String limit) {
 
 }
 
-//Query 13
+// Query 13
 public static void thirteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT F.uID, F.tconst "
-				+ "FROM Favorites F LEFT OUTER JOIN Ratings ON (uID) "
-				+ "WHERE rating IS NULL;");
+		rs = stmt.executeQuery("SELECT F.uID, F.tconst " +
+				"FROM Favorites F LEFT OUTER JOIN Ratings ON (F.uID=Ratings.uID) " +
+				"WHERE rating IS NULL " +
+				limit + ";");
 	
-		
+		// Process the results
 		while(rs.next()){
-			sop("uID: " + rs.getString("F.uID") + 
-				", tconst: " + rs.getInt("F.tconst"));
+			sop("uID: " + rs.getInt("F.uID") +
+					", tconst: " + rs.getString("F.tconst"));
 		}
 	} 
 	
@@ -415,23 +414,23 @@ public static void thirteen(Statement stmt, String limit) {
 
 }
 
-//Query 14
+// Query 14
 public static void fourteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryTitle, titleType, genre, startYear "
-				+ "SELECT primaryTitle, titleType, genre, startYear "
-				+ "FROM Users U JOIN Titles "
-				+ "WHERE tconst IN (SELECT tconst FROM Favorites WHERE uID=U.uID);");
-	
-		
+		rs = stmt.executeQuery("SELECT primaryTitle, titleType, genre, startYear " +
+				"FROM Users U, Titles " +
+				"WHERE tconst IN (SELECT tconst FROM Favorites WHERE uID=U.uID) " +
+				limit + ";");
+
+		// Process the results
 		while(rs.next()){
-			sop("Title: " + rs.getString("primaryTitle") + 
-				", Format: " + rs.getString("titleType") + 
-				", Genre: " + rs.getString("genre") + 
-				", First Aired: " + rs.getInt("startYear"));
+			sop("primaryTitle: " + rs.getString("primaryTitle") +
+					", titleType: " + rs.getString("titleType") +
+					", genre: " + rs.getString("genre") + 
+					", startYear: " + rs.getInt("startYear"));
 		}
 	} 
 	
@@ -441,21 +440,52 @@ public static void fourteen(Statement stmt, String limit) {
 
 }
 
-//Query 15
+// Query 15
 public static void fifteen(Statement stmt, String limit) {
 	
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT primaryName, COUNT(tconst) as numTitles "
-				+ "FROM Names NATURAL JOIN Principals "
-				+ "WHERE deathYear NOT NULL  "
-				+ "GROUP BY Names.nconst;");
-	
+		rs = stmt.executeQuery("SELECT N.nconst, primaryName, COUNT(tconst) " +
+				"FROM Names N NATURAL JOIN Principals " +
+				"WHERE deathYear IS NOT NULL " +
+				"GROUP BY N.nconst " +
+				limit + ";");
 		
+		// Process the results
 		while(rs.next()){
-			sop("Name: " + rs.getString("primaryName") + 
-				", Number of Titles Worked On: " + rs.getInt("numTitles"));
+			sop("nconst: " + rs.getString("N.nconst")
+					+ ", primaryName: " + rs.getString("primaryName")
+					+ ", Number of Titles: " + rs.getInt("COUNT(tconst)"));
+			
+		}
+	}
+	
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+// -----------------------------------
+
+//Prints the Users Table
+public static void printUsers(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Users "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("uID: " + rs.getInt("uID") + 
+					", uName: " + rs.getString("uName") +
+					", age: " + rs.getInt("age") +
+					", isAdult: " + rs.getBoolean("isAdult") +
+					", isAdmin: " + rs.getBoolean("isAdult")
+				);
 		}
 	} 
 	
@@ -465,5 +495,299 @@ public static void fifteen(Statement stmt, String limit) {
 
 }
 
+//Prints the Titles Table
+public static void printTitles(Statement stmt, String limit) {
 	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Titles "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("tconst: " + rs.getString("tconst") + 
+					", titleType: " + rs.getString("titleType") +
+					", primaryTitle: " + rs.getString("primaryTitle") +
+					", startYear: " + rs.getInt("startYear") +
+					", endYear: " + rs.getInt("endYear") +
+					", runtimeMinutes: " + rs.getInt("runtimeMinutes") +
+					", genre: " + rs.getString("genre") +
+					", updatedAt: " + rs.getTimestamp("updatedAt"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//Prints the Ratings Table
+public static void printRatings(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Ratings "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("uID: " + rs.getInt("uID") + 
+					", tconst: " + rs.getString("tconst") +
+					", rating: " + rs.getInt("rating") +
+					", ratingDate: " + rs.getDate("ratingDate"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//Prints the Episodes Table
+public static void printEpisodes(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Episodes "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("tconst: " + rs.getString("tconst") + 
+					", parentTconst: " + rs.getString("parentTconst") +
+					", seasonNum: " + rs.getInt("seasonNum") +
+					", episodeNum: " + rs.getInt("episodeNum"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//Prints the Names Table
+public static void printNames(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Names "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("nconst: " + rs.getString("nconst") + 
+					", primaryName: " + rs.getString("primaryName") +
+					", birthYear: " + rs.getInt("birthYear") +
+					", deathYear: " + rs.getInt("deathYear") + 
+					", primaryProfession: " + rs.getString("primaryProfession"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//Prints the Principals Table
+public static void printPrincipals(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Principals "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("tconst: " + rs.getString("tconst") + 
+					", nconst: " + rs.getString("nconst") +
+					", category: " + rs.getString("category"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//Prints the Favorites Table
+public static void printFavorites(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Favorites "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("uID: " + rs.getInt("uID") + 
+					", tconst: " + rs.getString("tconst"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//Prints the Archive Table
+public static void printArchive(Statement stmt, String limit) {
+	
+	ResultSet rs = null;
+	
+	try {
+		rs = stmt.executeQuery("SELECT * FROM Archive "
+				+ limit + ";");
+		
+		// Process the results
+		while(rs.next()){
+			sop("tconst: " + rs.getString("tconst") + 
+					", titleType: " + rs.getString("titleType") +
+					", primaryTitle: " + rs.getString("primaryTitle") +
+					", startYear: " + rs.getInt("startYear") +
+					", endYear: " + rs.getInt("endYear") +
+					", runtimeMinutes: " + rs.getInt("runtimeMinutes") +
+					", genre: " + rs.getString("genre") +
+					", updatedAt: " + rs.getTimestamp("updatedAt"));
+		}
+	} 
+
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+
+}
+
+//-------------------------------------------
+
+//Archive Stored Procedure
+//Stores all 'Crime' titles in the archive (by changing the updatedAt value).
+public static void archiveFunction(String desc, String limit) {
+
+	Connection conn = null;
+	Statement stmt = null;
+	CallableStatement cs = null;
+	
+	try {
+		// Open a connection, create a statement
+		conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		stmt = conn.createStatement();
+			
+		// Execute Update
+		sop(desc);
+		stmt.executeUpdate("UPDATE Titles SET updatedAt='2008-01-01 00:00:01' WHERE genre='Crime';");
+		
+		// Archive Procedure		
+		sop("Calling the procedure archiveProcedure");
+		cs = conn.prepareCall("{CALL archiveProcedure(?)}");
+		cs.setString(1, "2010-01-01");
+		cs.executeQuery();		
+		
+		// Prints Archive
+		printArchive(stmt, limit);
+	}
+		
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+		
+	// Close Resources 
+	finally {
+		// Close Statement
+		try{ if (stmt != null) stmt.close(); } 
+		catch (SQLException se2) {} 				// Nothing
+		
+		// Close Connection
+		try{ if (conn != null) conn.close(); } 
+		catch (SQLException se){ se.printStackTrace(); } 	//Handles errors for JDBC
+	}	
+	
+}
+	
+
+
+//-------------------------------------------
+// Key Violations
+
+// Violation of Primary Key uID in Users Table
+public static void userKey() {
+
+	Connection conn = null;
+	Statement stmt = null;
+	
+	try {
+		// Open a connection, create a statement
+		conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		stmt = conn.createStatement();
+			
+		// Execute Update
+		sop("Primary Key Violation (Users)");
+		stmt.executeUpdate("UPDATE Users SET uID=uID+1 WHERE uID>0;");
+	}
+		
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+		
+	// Close Resources 
+	finally {
+		// Close Statement
+		try{ if (stmt != null) stmt.close(); } 
+		catch (SQLException se2) {} 				// Nothing
+		
+		// Close Connection
+		try{ if (conn != null) conn.close(); } 
+		catch (SQLException se){ se.printStackTrace(); } 	//Handles errors for JDBC
+	}	
+	
+}
+
+//Violation of Foreign Key uID in Users Table
+public static void favoriteKey() {
+
+	Connection conn = null;
+	Statement stmt = null;
+	
+	try {
+		// Open a connection, create a statement
+		conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		stmt = conn.createStatement();
+			
+		// Execute Update
+		sop("Foreign Key Violation (Favorites)");
+		stmt.executeUpdate("INSERT INTO Favorites VALUES (1, 'string');");
+	}
+		
+	// Catch Blocks
+	catch (SQLException se) { se.printStackTrace();	} 	// Handle errors for JDBC
+	catch (Exception e) { e.printStackTrace();	} 		// Handle errors for Class.forName
+		
+	// Close Resources 
+	finally {
+		// Close Statement
+		try{ if (stmt != null) stmt.close(); } 
+		catch (SQLException se2) {} 				// Nothing
+		
+		// Close Connection
+		try{ if (conn != null) conn.close(); } 
+		catch (SQLException se){ se.printStackTrace(); } 	//Handles errors for JDBC
+	}	
+	
+}
+
+
+
+
+
 } // End of class
