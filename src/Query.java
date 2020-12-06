@@ -345,9 +345,9 @@ public static void eleven(Statement stmt, String limit) {
 	ResultSet rs = null;
 	
 	try {
-		rs = stmt.executeQuery("SELECT DISTINCT N.primayName " + 
+		rs = stmt.executeQuery("SELECT DISTINCT N.nconst, N.primaryName " + 
 				"FROM Ratings R NATURAL JOIN Titles T NATURAL JOIN Principles P NATURAL JOIN Names N " + 
-				"WHERE N.primaryProfession = 'actor' AND T.titleType = 'movie' " + 
+				"WHERE T.titleType = “movie” AND (N.primaryProfession = “actor” OR N.primaryProfession = “actress”) " + 
 				"GROUP BY N.nconst " + 
 				"HAVING max(R.int) >= 4; " + 
 				""
@@ -355,7 +355,8 @@ public static void eleven(Statement stmt, String limit) {
 		
 		// Process the results
 		while(rs.next()){
-			sop("Primary Name: " + rs.getString("primaryName"));
+			sop("nconst: " + rs.getString("N.nconst") + 
+				", Name: " + rs.getInt("N.primaryName"));
 			}
 	} 
 	
