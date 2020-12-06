@@ -27,7 +27,7 @@ public class Final {
  * List of Table Calls
  * 		QueryCalls.usersTable(limit);
  * 		QueryCalls.titlesTable(limit50);
- *  	QueryCalls.ratingsTable(limit50);
+ *  		QueryCalls.ratingsTable(limit50);
  * 		QueryCalls.episodesTable(limit50);
  * 		QueryCalls.namesTable(limit50);
  * 		QueryCalls.principalsTable(limit50);
@@ -60,9 +60,9 @@ public static void main(String[] args) {
 	Scanner scanner = new Scanner(System.in);
    
     
-    String stay = "stay";
+    	String stay = "stay";
     
-    while (!stay.equals("exit")) {
+    	while (!stay.equals("exit")) {
     	
     	int queryNumber, limit;
     	      
